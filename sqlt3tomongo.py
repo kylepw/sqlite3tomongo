@@ -14,12 +14,10 @@
 
 """
 import argparse
-import json
 import logging
 import os
 from pymongo import MongoClient
 import sqlite3
-import sys
 
 __version__ = '0.1.0'
 
@@ -31,7 +29,15 @@ logger = logging.getLogger(__name__)
 
 
 def load_sql(args):
-    """Load SQLite3 data"""
+    """Load SQLite3 data.
+
+    Args:
+        args (dict): command line arg values. 'dbfile' key value used.
+
+    Returns:
+        Dictionary with database name in 'db' and list of docs in
+        'collections' grouped by collection (table) name.
+    """
     try:
         db_path = os.path.abspath(args['dbfile'])
         if not os.path.isfile(db_path):
@@ -71,7 +77,16 @@ def load_sql(args):
 
 
 def dump_mongo(data, args):
-    """Dump collection data into mongod"""
+    """Dump collection data into mongod
+
+    Args:
+        data (dict): database name and collection docs.
+            'db': database name
+            'collections': list of docs grouped by collection names
+        args (dict): command line arg values.
+            'uri' (str): mongodb uri
+            'append' (bool): whether to drop collection or not
+    """
     client = MongoClient(args['uri'])
     try:
         if 'db' not in data:
@@ -79,7 +94,6 @@ def dump_mongo(data, args):
         if 'collections' not in data:
             raise ValueError("'collections' key missing in dictionary")
         db = client[data['db']]
-        results = []
         for coll_name, docs in data['collections'].items():
             coll = db[coll_name]
             if not args['append']:
