@@ -30,9 +30,13 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def load_sql(db_path):
+def load_sql(args):
     """Load SQLite3 data"""
     try:
+        db_path = os.path.abspath(args['dbfile'])
+        if not os.path.isfile(db_path):
+            raise OSError(f"Invalid file: {args['dbfile']}")
+
         conn = sqlite3.connect(db_path)
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
@@ -40,7 +44,8 @@ def load_sql(db_path):
         c.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;")
         tables = c.fetchall()
 
-        data = {'db': os.path.splitext(os.path.basename(db_path))[0], 'collections': {}}
+
+        data = {'db': args['dbname'] or os.path.splitext(os.path.basename(db_path))[0], 'collections': {}}
         for table in tables:
             c.execute(f"SELECT * FROM {table['name']}")
             rows = c.fetchall()
@@ -53,6 +58,7 @@ def load_sql(db_path):
                         doc[key] = row[key]
                 docs.append(doc)
             data['collections'][table['name']] = docs
+            logger.info('`%s` table loaded with %s rows', table['name'], len(docs))
 
         return data
     except Exception:
@@ -62,10 +68,9 @@ def load_sql(db_path):
         conn.close()
 
 
-def dump_mongo(data, uri=None):
+def dump_mongo(data, args):
     """Dump collection data into mongod"""
-    uri = uri or 'mongodb://localhost:27017'
-    client = MongoClient(uri)
+    client = MongoClient(args['uri'])
     try:
         if 'db' not in data:
             raise ValueError("'db' key missing in dictionary")
@@ -75,11 +80,11 @@ def dump_mongo(data, uri=None):
         results = []
         for coll_name, docs in data['collections'].items():
             coll = db[coll_name]
-            coll.drop()
-            logger.info('Dropped %s collection from %s', coll_name, data['db'])
-            coll.insert_many(docs)
+            if not args['append']:
+                coll.drop()
+                logger.info('dropped %s collection from %s', coll_name, data['db'])
             expected_count = len(data['collections'][coll_name])
-            count = coll.count_documents({})
+            count = len(coll.insert_many(docs).inserted_ids)
             result_str = '%s docs inserted into %s.%s' % (count, data['db'], coll_name)
             logger.info(result_str)
             assert count == expected_count, (
@@ -104,6 +109,8 @@ def get_parser():
         help='mongodb uri',
         default='mongodb://localhost:27017',
     )
+    parser.add_argument('--db', '--database', dest='dbname', metavar='string', help='mongod database name (defaults to filename)')
+    parser.add_argument('-a', '--append', help='append to existing collections (dropped by default)', action='store_true', default=False)
     parser.add_argument('-v', '--version', action='version', version=__version__)
     return parser
 
@@ -112,15 +119,8 @@ def main():
     parser = get_parser()
     args = vars(parser.parse_args())
     try:
-        db_path = os.path.abspath(args['dbfile'])
-        if not os.path.isfile(db_path):
-            err_msg = f"Invalid file: {args['dbfile']}"
-            print(err_msg)
-            raise OSError(err_msg)
-
-        # load and dump data (sql to mongo)
-        data = load_sql(db_path)
-        dump_mongo(data, args['uri'])
+        data = load_sql(args)
+        dump_mongo(data, args)
     except KeyboardInterrupt:
         print('\nBye!')
     except Exception:
