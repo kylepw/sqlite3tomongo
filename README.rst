@@ -21,17 +21,20 @@ Usage
 -----
 ::
 
-    usage: sqlt3tomongo.py [-h] [--host string] [-v] file
+    usage: sqlt3tomongo.py [-h] [--host string] [--db string] [-a] [-v] file
 
-    Import SQLite3 database into MongoDB
+    Import SQLite3 database into MongoDB.
 
     positional arguments:
-    file           sqlite3 database file
+    file                  sqlite3 database file
 
     optional arguments:
-    -h, --help     show this help message and exit
-    --host string  mongodb uri
-    -v, --version  show program's version number and exit
+    -h, --help            show this help message and exit
+    --host string         mongodb uri
+    --db string, --database string
+                            mongod database name (defaults to filename)
+    -a, --append          append to existing collections (dropped by default)
+    -v, --version         show program's version number and exit
 
 To view logs: ::
 
