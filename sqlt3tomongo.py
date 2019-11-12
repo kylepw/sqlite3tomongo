@@ -95,13 +95,13 @@ def dump_mongo(data, uri=None):
 
 
 def get_parser():
-    parser = argparse.ArgumentParser(description='Import SQLite3 database into MongoDB')
+    parser = argparse.ArgumentParser(description='Import SQLite3 database into MongoDB.')
     parser.add_argument('dbfile', metavar='file', help='sqlite3 database file')
     parser.add_argument(
         '--host',
         dest='uri',
         metavar='string',
-        help='mongodb uri string',
+        help='mongodb uri',
         default='mongodb://localhost:27017',
     )
     parser.add_argument('-v', '--version', action='version', version=__version__)
