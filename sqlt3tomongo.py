@@ -44,8 +44,10 @@ def load_sql(args):
         c.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;")
         tables = c.fetchall()
 
-
-        data = {'db': args['dbname'] or os.path.splitext(os.path.basename(db_path))[0], 'collections': {}}
+        data = {
+            'db': args['dbname'] or os.path.splitext(os.path.basename(db_path))[0],
+            'collections': {},
+        }
         for table in tables:
             c.execute(f"SELECT * FROM {table['name']}")
             rows = c.fetchall()
@@ -100,7 +102,9 @@ def dump_mongo(data, args):
 
 
 def get_parser():
-    parser = argparse.ArgumentParser(description='Import SQLite3 database into MongoDB.')
+    parser = argparse.ArgumentParser(
+        description='Import SQLite3 database into MongoDB.'
+    )
     parser.add_argument('dbfile', metavar='file', help='sqlite3 database file')
     parser.add_argument(
         '--host',
@@ -109,8 +113,20 @@ def get_parser():
         help='mongodb uri',
         default='mongodb://localhost:27017',
     )
-    parser.add_argument('--db', '--database', dest='dbname', metavar='string', help='mongod database name (defaults to filename)')
-    parser.add_argument('-a', '--append', help='append to existing collections (dropped by default)', action='store_true', default=False)
+    parser.add_argument(
+        '--db',
+        '--database',
+        dest='dbname',
+        metavar='string',
+        help='mongod database name (defaults to filename)',
+    )
+    parser.add_argument(
+        '-a',
+        '--append',
+        help='append to existing collections (dropped by default)',
+        action='store_true',
+        default=False,
+    )
     parser.add_argument('-v', '--version', action='version', version=__version__)
     return parser
 
