@@ -2,7 +2,7 @@
 sqlite3tomongo
 ==============
 
-Simple script to import a SQLite3 database into MongoDB instance.
+Script to import SQLite3 database into MongoDB database.
 
 Requirements
 ------------
@@ -14,19 +14,28 @@ Installation
 ::
 
     $ git clone git@github.com:kylepw/sqlite3tomongo.git && cd sqlite3tomongo
-    $ python -m venv venv_sql3m && source venv_sql3m/bin/activate
-    (venv_sql3m) $ pip install -r requirements.txt
+    $ pip3 install pipenv
+    $ pipenv install && pipenv shell
 
 Usage
 -----
 ::
 
-    (venv_sql3m) $ # Make sure a mongod instance is running.
-    (venv_sql3m) $ python3 sqlite3tomongo.py test.db 'mongodb://localhost:27017'
+    usage: sqlt3tomongo.py [-h] [--host string] [-v] file
 
-or to view info logs: ::
+    Import SQLite3 database into MongoDB
 
-    (venv_sql3m) $ LOGLEVEL=info python3 sqlite3tomongo.py test.db 'mongodb://localhost:27017'
+    positional arguments:
+    file           sqlite3 database file
+
+    optional arguments:
+    -h, --help     show this help message and exit
+    --host string  mongodb uri
+    -v, --version  show program's version number and exit
+
+To view logs: ::
+
+    $ LOGLEVEL=info python3 sqlite3tomongo.py yoursqldb.db --host 'mongodb://yourmongodb:27017'
 
 License
 -------
