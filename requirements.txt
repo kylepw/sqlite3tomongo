@@ -1,0 +1,2 @@
+-i https://pypi.org/simple
+pymongo==3.9.0
