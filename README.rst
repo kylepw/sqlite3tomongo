@@ -21,6 +21,7 @@ Usage
 -----
 ::
 
+    $ python3 sqlt3tomongo.py -h
     usage: sqlt3tomongo.py [-h] [--host string] [--db string] [-a] [-v] file
 
     Import SQLite3 database into MongoDB.
@@ -38,7 +39,13 @@ Usage
 
 To view logs: ::
 
-    $ LOGLEVEL=info python3 sqlite3tomongo.py yoursqldb.db --host 'mongodb://yourmongodb:27017'
+    $ LOGLEVEL=info python3 sqlt3tomongo.py yoursqldb.db --host 'mongodb://yourmongodb:27017'
+
+Testing
+-------
+::
+
+    $ python3 -m unittest test_sqlt3mongo.py
 
 License
 -------
