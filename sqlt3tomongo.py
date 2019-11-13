@@ -38,6 +38,7 @@ def load_sql(args):
         Dictionary with database name in 'db' and list of docs in
         'collections' grouped by collection (table) name.
     """
+    conn = None
     try:
         db_path = os.path.abspath(args['dbfile'])
         if not os.path.isfile(db_path):
@@ -73,7 +74,8 @@ def load_sql(args):
         print('Failed to load SQLite3 data. Check the logs.')
         raise
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 
 def dump_mongo(data, args):
