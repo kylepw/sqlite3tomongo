@@ -89,10 +89,12 @@ def dump_mongo(data, args):
     """
     client = MongoClient(args['uri'])
     try:
-        if 'db' not in data:
-            raise ValueError("'db' key missing in dictionary")
-        if 'collections' not in data:
-            raise ValueError("'collections' key missing in dictionary")
+        if not isinstance(data, dict) or not isinstance(args, dict):
+            raise ValueError('Arguments must be dict type')
+        if 'db' not in data or not isinstance(data['db'], str):
+            raise ValueError("'db' key value missing or invalid")
+        if 'collections' not in data or not isinstance(data['collections'], dict):
+            raise ValueError("'collections' key value missing or invalid")
         db = client[data['db']]
         for coll_name, docs in data['collections'].items():
             coll = db[coll_name]
