@@ -1,16 +1,17 @@
-""" sqlt3import
-    ~~~~~~~~~~~
+""" sqlt3tomongo.py
+    ~~~~~~~~~~~~~~~
 
     Import SQLite3 database into MongoDB database.
 
     Usage:
-        $ sqlt3import data.db --host 'mongodb://mydatabase:27017'
+        $ python3 sqlt3tomongo.py data.db --host 'mongodb://mydatabase:27017'
 
     Notes:
-        Database named after filename by default (i.e. `data` if filename
+        Database name is filename base by default (i.e. `data` if filename
         is `data.db`). Host defaults to 'mongodb://localhost:27017' if none
-        provided. Collections named after SQL tables. Collections are dropped
-        before inserts by default. Use '--append' option to keep collections.
+        provided. Collections inherit SQL table names. Collections are dropped
+        before inserts by default. Use '--append' option to keep exiting
+        collections.
 
 """
 import argparse
