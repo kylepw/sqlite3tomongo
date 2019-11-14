@@ -160,6 +160,7 @@ def main():
         print('\nBye!')
     except Exception:
         logger.exception('Something went wrong.')
+        exit(1)
     else:
         print('Done.')
 
